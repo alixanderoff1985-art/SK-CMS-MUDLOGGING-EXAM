@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10243a"><title>SK-CMS MUDLOGGING EXAM</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--navy:#10243a;--blue:#1769aa;--bg:#f3f6fa;--line:#dce4ed;--green:#16834b;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial;background:var(--bg);color:#182536}
+header{background:linear-gradient(120deg,#10243a,#1d527d);color:#fff;padding:18px max(16px,calc((100% - 1100px)/2));}
+header h1{font-size:20px;margin:0 0 5px}header p{margin:0;color:#d5e4f2;font-size:13px}
+main{max-width:1100px;margin:18px auto;padding:0 14px 40px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 3px 14px #18334b0a}
+h2{font-size:18px;margin:0 0 12px}.muted{color:#65758a;font-size:13px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:11px;border:1px solid #cbd6e2;border-radius:9px;background:white;color:#172638}textarea{min-height:90px;resize:vertical}
+button{border:0;border-radius:9px;padding:10px 14px;background:var(--blue);color:#fff;cursor:pointer;font-weight:650}button.secondary{background:#e9f0f7;color:#18334b}button.danger{background:#b42318}button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.field{display:grid;gap:6px;margin-bottom:10px}.hidden{display:none!important}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:4px 9px;background:#edf2f7;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:#16a05a;display:inline-block}.offline{background:#9aa6b2}
+.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tabs button{white-space:nowrap}.tabs button.active{background:#10243a}
+.person,.item{padding:10px;border:1px solid var(--line);border-radius:10px;margin:7px 0}.chatlog{height:270px;overflow:auto;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px}.msg{padding:8px 10px;background:white;border:1px solid #e1e8ef;border-radius:10px;margin:6px 0;max-width:95%}.msg small{display:block;color:#718096;margin-top:3px}.msg.mine{border-color:#b9d8f2;background:#f0f8ff}
+.question{border:1px solid var(--line);border-radius:11px;padding:12px;margin:10px 0}.choice{display:flex;gap:8px;align-items:center;margin:7px 0}.choice input{width:auto}.status{font-size:12px;color:#617287}
+footer{text-align:center;color:#8090a0;font-size:12px;padding:20px}
+@media(max-width:600px){header h1{font-size:17px}.panel{padding:13px}button{padding:10px 12px}}
+</style>
+</head>
+<body>
+<header><h1>SK-CMS MUDLOGGING EXAM</h1><p>منصة الاختبارات والتواصل — Online Examination & Live Collaboration</p></header>
+<main>
+<section id="login" class="panel" style="max-width:460px;margin:35px auto">
+<h2>تسجيل الدخول | Sign in</h2>
+<p class="muted">اكتب اسمك كما هو مسجل ثم كلمة المرور المخصصة لك.</p>
+<div class="field"><label>الاسم | Name</label><input id="loginName" list="accountNames" autocomplete="username" placeholder="اختر اسمك"><datalist id="accountNames"></datalist></div>
+<div class="field"><label>كلمة المرور | Password</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="كلمة المرور"></div>
+<button id="loginBtn" style="width:100%">دخول</button><p id="loginError" class="muted"></p>
+<p class="muted">إذا لم تستطع الدخول، تواصل مع مدير المنصة.</p>
+<p class="muted" style="text-align:center;margin-top:22px;font-weight:600;color:#334155">برمجة المهندس وجدي ساتر<br>الشركة العالمية</p>
+</section>
+<section id="app" class="hidden">
+<div class="panel row between">
+<div><strong id="welcome"></strong><div class="muted" id="roleLabel"></div></div>
+<div class="row"><span class="badge"><span class="dot"></span> متصل الآن</span><button class="secondary" id="logoutBtn">خروج</button></div>
+</div>
+<div class="grid">
+<section class="panel"><div class="row between"><h2>المتصلون الآن</h2><span id="onlineCount" class="badge">0</span></div><div id="onlineList" class="muted">جار التحميل...</div></section>
+<section class="panel"><h2>إحصاءات المجموعة</h2><div id="stats" class="muted">—</div></section>
+</div>
+<div class="tabs">
+<button class="active" data-tab="chat">الدردشة العامة</button>
+<button data-tab="exams">الاختبارات</button>
+<button data-tab="results">الإجابات والتصويت</button>
+</div>
+<section id="tab-chat" class="panel">
+<h2>الدردشة المشتركة</h2><div id="chatLog" class="chatlog"></div>
+<div class="row" style="margin-top:9px"><input id="chatInput" placeholder="اكتب رسالة أو سؤالاً..." style="flex:1"><button id="sendChat">إرسال</button></div>
+</section>
+<section id="tab-exams" class="panel hidden">
+<div class="row between"><h2>الاختبارات</h2><button id="newExamBtn" class="hidden">إنشاء اختبار</button></div>
+<div id="examList" class="muted">لا توجد اختبارات بعد.</div>
+<div id="examEditor" class="hidden">
+<hr><h2>إنشاء اختبار جديد</h2>
+<div class="field"><label>عنوان الاختبار</label><input id="examTitle" placeholder="مثال: Mud Logging — Module 1"></div>
+<div class="field"><label>وصف الاختبار</label><textarea id="examDesc"></textarea></div>
+<div class="field"><label>مدة الاختبار بالدقائق (0 = بلا مؤقت)</label><input id="examDuration" type="number" min="0" value="0"></div>
+<h3>إضافة سؤال</h3>
+<div class="field"><label>نص السؤال</label><textarea id="qText"></textarea></div>
+<div class="grid">
+<div class="field"><label>نوع السؤال</label><select id="qType"><option value="mcq">اختيار متعدد</option><option value="tf">صح / خطأ</option><option value="written">إجابة كتابية / شرح</option></select></div>
+<div class="field"><label>الدرجة</label><input id="qPoints" type="number" min="1" value="1"></div>
+</div>
+<div id="choicesBox" class="field"><label>الخيارات (كل خيار في سطر)</label><textarea id="qChoices" placeholder="الخيار الأول&#10;الخيار الثاني&#10;الخيار الثالث"></textarea></div>
+<div class="field"><label>صورة السؤال (اختياري)</label><input id="qImage" type="file" accept="image/*"></div>
+<button id="addQuestion" class="secondary">إضافة السؤال إلى الاختبار</button><div id="draftQuestions"></div>
+<div class="row"><button id="publishExam">نشر الاختبار</button><button id="cancelExam" class="secondary">إلغاء</button></div>
+</div>
+</section>
+<section id="tab-results" class="panel hidden"><h2>الإجابات والتصويت</h2><div id="submissions">لا توجد إجابات بعد.</div></section>
+</section>
+</main><footer>SK-CMS MUDLOGGING EXAM · GitHub Pages + Firebase Realtime Database</footer>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="accounts.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const isConfigured=window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey && !String(window.FIREBASE_CONFIG.apiKey).includes("PUT_");
+let auth,db,current=null,presenceRef=null,draft=[],chatListener=null;
+const accounts=window.SK_ACCOUNTS||[];
+accounts.forEach(a=>{let o=document.createElement('option');o.value=a.name;$('accountNames').appendChild(o)});
+function emailFor(a){return a.email}
+function setError(t){$('loginError').textContent=t}
+function showApp(a){current=a;$('login').classList.add('hidden');$('app').classList.remove('hidden');$('welcome').textContent='مرحباً، '+a.name;$('roleLabel').textContent=a.role==='supervisor'?'مشرف':'طالب';$('newExamBtn').classList.toggle('hidden',a.role!=='supervisor');startPresence();listenOnline();listenChat();listenExams();listenSubmissions()}
+function startPresence(){
+ const ref=db.ref('presence/'+auth.currentUser.uid);presenceRef=ref;
+ ref.set({name:current.name,role:current.role,online:true,lastChanged:firebase.database.ServerValue.TIMESTAMP});
+ ref.onDisconnect().set({name:current.name,role:current.role,online:false,lastChanged:firebase.database.ServerValue.TIMESTAMP});
+}
+function listenOnline(){db.ref('presence').on('value',s=>{let arr=[];s.forEach(x=>{let v=x.val();if(v&&v.online)arr.push(v)});$('onlineCount').textContent=arr.length+' متصل';$('stats').textContent='المشرفون المتصلون: '+arr.filter(x=>x.role==='supervisor').length+' — الطلاب المتصلون: '+arr.filter(x=>x.role==='student').length;$('onlineList').innerHTML=arr.map(x=>`<div class="person row between"><span>${esc(x.name)}</span><span class="badge"><span class="dot"></span> Online</span></div>`).join('')||'لا يوجد مستخدمون متصلون حالياً'})}
+function listenChat(){db.ref('chat').limitToLast(100).on('value',s=>{let vals=[];s.forEach(x=>vals.push(x.val()));$('chatLog').innerHTML=vals.map(m=>`<div class="msg ${m.uid===auth.currentUser.uid?'mine':''}"><b>${esc(m.name)}</b> <span class="status">(${m.role==='supervisor'?'مشرف':'طالب'})</span><div>${esc(m.text)}</div><small>${m.time?new Date(m.time).toLocaleString('ar'):''}</small></div>`).join('');$('chatLog').scrollTop=$('chatLog').scrollHeight})}
+function listenExams(){db.ref('exams').on('value',s=>{let out=[];s.forEach(x=>out.unshift({id:x.key,...x.val()}));$('examList').innerHTML=out.map(e=>`<div class="item"><div class="row between"><b>${esc(e.title)}</b><span class="badge">${e.questions?.length||0} سؤال</span></div><p class="muted">${esc(e.description||'')}</p><button onclick="takeExam('${e.id}')">فتح الاختبار</button> ${current.role==='supervisor'?`<button class="secondary" onclick="deleteExam('${e.id}')">حذف</button>`:''}</div>`).join('')||'لا توجد اختبارات بعد.'})}
+function listenSubmissions(){db.ref('submissions').on('value',s=>{let items=[];s.forEach(ex=>{ex.forEach(st=>{let v=st.val();items.push({examId:ex.key,studentId:st.key,...v})})});$('submissions').innerHTML=items.map(v=>`<div class="item"><b>${esc(v.studentName)}</b> — ${esc(v.examTitle)}<div class="muted">${esc(v.answerText||'إجابة محفوظة')}</div><div class="row">${current.role==='supervisor'?`<input id="score-${v.examId}-${v.studentId}" type="number" min="0" max="100" placeholder="العلامة" style="max-width:100px"><button onclick="vote('${v.examId}','${v.studentId}')">تصويت بالعلامة</button>`:''}<span class="badge">العلامة المعتمدة: ${v.finalScore??'بانتظار التصويت'}</span></div></div>`).join('')||'لا توجد إجابات بعد.'})}
+$('loginBtn').onclick=async()=>{if(!isConfigured){setError('إعدادات Firebase غير مكتملة في firebase-config.js.');return}let name=$('loginName').value.trim(),pass=$('loginPass').value,a=accounts.find(x=>x.name===name);if(!a){setError('الاسم غير موجود في قائمة الحسابات.');return}const expected=a.role==='supervisor'?'1234':'sk88';const firebasePassword=a.role==='supervisor'?'123456':'skcms88';if(pass!==expected){setError('كلمة المرور غير صحيحة.');return}try{await auth.signInWithEmailAndPassword(a.email,firebasePassword);setError('')}catch(e){console.error(e);setError('تعذر تسجيل الدخول. تأكد من أن حساب '+a.email+' موجود في Firebase Authentication وأن كلمة مروره الداخلية صحيحة.')}};
+$('logoutBtn').onclick=async()=>{if(presenceRef)await presenceRef.set({name:current.name,role:current.role,online:false,lastChanged:firebase.database.ServerValue.TIMESTAMP});await auth.signOut();location.reload()};
+$('sendChat').onclick=async()=>{let text=$('chatInput').value.trim();if(!text)return;await db.ref('chat').push({uid:auth.currentUser.uid,name:current.name,role:current.role,text,time:Date.now()});$('chatInput').value=''};
+$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('sendChat').click()});
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['chat','exams','results'].forEach(t=>$('tab-'+t).classList.toggle('hidden',t!==b.dataset.tab))});
+$('newExamBtn').onclick=()=>{$('examEditor').classList.remove('hidden');draft=[];renderDraft()};
+$('cancelExam').onclick=()=>{$('examEditor').classList.add('hidden')};
+$('qType').onchange=()=> $('choicesBox').classList.toggle('hidden',$('qType').value==='written');
+$('addQuestion').onclick=async()=>{let text=$('qText').value.trim();if(!text)return alert('أدخل نص السؤال');let q={text,type:$('qType').value,points:Number($('qPoints').value)||1,choices:$('qType').value==='tf'?['صح','خطأ']:($('qType').value==='mcq'?$('qChoices').value.split('\n').map(x=>x.trim()).filter(Boolean):[])};let f=$('qImage').files[0];if(f){q.image=await compressImage(f)}draft.push(q);$('qText').value='';$('qImage').value='';renderDraft()};
+function renderDraft(){$('draftQuestions').innerHTML=draft.map((q,i)=>`<div class="item">${i+1}. ${esc(q.text)} <span class="badge">${q.type}</span></div>`).join('')}
+$('publishExam').onclick=async()=>{let title=$('examTitle').value.trim();if(!title||!draft.length)return alert('أدخل عنواناً وأضف سؤالاً واحداً على الأقل');await db.ref('exams').push({title,description:$('examDesc').value, duration:Number($('examDuration').value)||0,questions:draft,createdBy:auth.currentUser.uid,createdByName:current.name,createdAt:Date.now()});$('examEditor').classList.add('hidden');draft=[]};
+window.takeExam=async id=>{let s=await db.ref('exams/'+id).once('value'),e=s.val();if(!e)return;let answers=[];let html=e.questions.map((q,i)=>{let control=q.type==='written'?`<textarea id="ans${i}" placeholder="اكتب إجابتك..."></textarea>`:q.choices.map((c,j)=>`<label class="choice"><input type="radio" name="ans${i}" value="${esc(c)}">${esc(c)}</label>`).join('');return `<div class="question"><b>س${i+1}. ${esc(q.text)} (${q.points} درجات)</b>${q.image?`<img src="${q.image}" style="display:block;max-width:100%;max-height:240px;margin:8px 0">`:''}${control}</div>`}).join('');let w=window.open('','_blank');w.document.write(`<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#10243a"><title>${esc(e.title)}</title><style>*{box-sizing:border-box}html,body{width:100%;min-height:100%;margin:0}body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;font-size:18px;line-height:1.65;background:#f3f6fa;color:#182536;padding:clamp(12px,4vw,24px)}.exam-wrap{width:100%;max-width:900px;margin:0 auto}h2{font-size:clamp(22px,5vw,30px);line-height:1.35;margin:0 0 18px}.question{width:100%;background:#fff;border:1px solid #dce4ed;border-radius:14px;padding:clamp(14px,4vw,22px);margin:0 0 14px;overflow-wrap:anywhere}.question b{display:block;font-size:clamp(18px,4.5vw,22px);margin-bottom:10px}.choice{display:flex;align-items:flex-start;gap:10px;padding:10px 8px;margin:6px 0;border:1px solid #e1e8ef;border-radius:10px;font-size:17px}.choice input{width:22px;height:22px;flex:0 0 22px;margin:2px 0 0}textarea{display:block;width:100%;min-height:130px;padding:13px;border:1px solid #cbd6e2;border-radius:10px;font:inherit;font-size:17px;resize:vertical}img{display:block;width:auto;max-width:100%;height:auto;max-height:45vh;object-fit:contain;margin:12px auto;border-radius:10px}button{display:block;width:100%;min-height:52px;margin:18px 0 8px;padding:12px 18px;border:0;border-radius:11px;background:#1769aa;color:white;font:inherit;font-weight:700;font-size:18px;cursor:pointer}@media(min-width:700px){body{padding:24px}.question{padding:22px}}</style></head><body><main class="exam-wrap"><h2>${esc(e.title)}</h2>${html}<button id="submit">تسليم الإجابات</button></main><script>document.getElementById('submit').onclick=()=>{let a=${JSON.stringify(e.questions)}.map((q,i)=>q.type==='written'?document.getElementById('ans'+i).value:(document.querySelector('input[name=ans'+i+']:checked')||{}).value||'');window.opener.postMessage({kind:'exam-submit',id:${JSON.stringify(id)},answers:a},'*');alert('تم إرسال الإجابات');window.close()}<\/script></body></html>`);};
+window.addEventListener('message',async ev=>{if(ev.data?.kind!=='exam-submit')return;let exam=(await db.ref('exams/'+ev.data.id).once('value')).val();let text=ev.data.answers.map((a,i)=>`س${i+1}: ${a}`).join('\\n');await db.ref(`submissions/${ev.data.id}/${auth.currentUser.uid}`).set({studentId:auth.currentUser.uid,studentName:current.name,examTitle:exam.title,answers:ev.data.answers,answerText:text,submittedAt:Date.now(),votes:{}});alert('تم حفظ إجابتك')});
+window.deleteExam=async id=>{if(confirm('حذف الاختبار؟'))await db.ref('exams/'+id).remove()};
+window.vote=async(examId,studentId)=>{let el=$('score-'+examId+'-'+studentId),score=Number(el.value);if(!Number.isFinite(score)||score<0)return alert('أدخل علامة صحيحة');let path=`submissions/${examId}/${studentId}/votes/${auth.currentUser.uid}`;await db.ref(path).set({score,supervisor:current.name,at:Date.now()});let s=await db.ref(`submissions/${examId}/${studentId}/votes`).once('value'),votes=[];s.forEach(x=>votes.push(x.val().score));let counts={};votes.forEach(v=>counts[v]=(counts[v]||0)+1);let max=Math.max(...Object.values(counts));let winners=Object.keys(counts).filter(k=>counts[k]===max);let finalScore=winners.length===1?Number(winners[0]):null;await db.ref(`submissions/${examId}/${studentId}/finalScore`).set(finalScore);if(winners.length>1)alert('يوجد تعادل؛ لم تعتمد العلامة بعد. يلزم تصويت إضافي أو قرار المدير.')};
+function compressImage(file){return new Promise((resolve,reject)=>{let r=new FileReader();r.onload=()=>{let im=new Image();im.onload=()=>{let c=document.createElement('canvas'),scale=Math.min(1,1000/im.width);c.width=im.width*scale;c.height=im.height*scale;c.getContext('2d').drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.7))};im.onerror=reject;im.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+if(isConfigured){firebase.initializeApp(window.FIREBASE_CONFIG);auth=firebase.auth();db=firebase.database();auth.onAuthStateChanged(async u=>{if(u){let a=accounts.find(x=>x.email===u.email);if(a)showApp(a);else await auth.signOut()}})}
+</script></body></html>
